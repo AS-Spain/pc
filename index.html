@@ -3,87 +3,48 @@
 <head>
 <style>
 * { margin: 0; padding: 0; }
-body { background: white; overflow: hidden; width: 100vw; height: 100vh; }
-.face {
-    display: inline-block;
-    animation: flash 0.1s infinite alternate;
-}
-@keyframes flash {
-    from { filter: invert(0); }
-    to { filter: invert(1); }
-}
+body { overflow: hidden; cursor: pointer; }
 #main {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
-    font-family: Arial, sans-serif;
-    font-size: 48px;
     animation: bg 0.1s infinite alternate;
 }
-@keyframes bg {
-    from { background: white; }
-    to { background: black; }
-}
-#text { color: red; font-size: 36px; font-weight: bold; animation: col 0.1s infinite alternate; }
-@keyframes col {
-    from { color: red; }
-    to { color: blue; }
-}
+@keyframes bg { from { background: white; } to { background: black; } }
+#text { font-family: Arial; font-size: 36px; font-weight: bold; animation: col 0.1s infinite alternate; }
+@keyframes col { from { color: red; } to { color: blue; } }
+.f { font-size: 48px; animation: fl 0.1s infinite alternate; }
+@keyframes fl { from { filter: invert(0); } to { filter: invert(1); } }
 </style>
 </head>
 <body>
 <div id="main">
     <div id="text">YOU ARE AN IDIOT!</div>
-    <div><span class="face">☺</span> <span class="face">☺</span> <span class="face">☺</span></div>
+    <div><span class="f">&#9786;</span> <span class="f">&#9786;</span> <span class="f">&#9786;</span></div>
 </div>
+<audio id="aud" loop src="yai.wav"></audio>
 <script>
 var started = false;
-var popups = [];
 
-function playAudio() {
-    var a = new Audio('https://www.myinstants.com/media/sounds/you-are-an-idiot.mp3');
-    a.loop = true;
-    a.play().catch(function(){});
-}
-
-function spawnPopup() {
-    var w = window.open('popup.html', '_blank',
-        'width=300,height=200,left=' + Math.floor(Math.random()*900) +
-        ',top=' + Math.floor(Math.random()*600));
-    if (w) popups.push(w);
-}
-
-function checkClosed() {
-    var alive = [];
-    for (var i = 0; i < popups.length; i++) {
-        if (popups[i].closed) {
-            spawnPopup();
-            spawnPopup();
-            playAudio();
-        } else {
-            alive.push(popups[i]);
-        }
-    }
-    popups = alive;
-    if (popups.length === 0 && started) spawnPopup();
-}
-
-function trigger() {
+document.addEventListener('click', function() {
+    document.getElementById('aud').play();
     if (!started) {
         started = true;
-        playAudio();
-        spawnPopup();
-        setInterval(checkClosed, 300);
-    } else {
-        spawnPopup();
-        playAudio();
+        // primer click: abre en la ventana actual también
+        // Chrome permite window.open dentro de click handler
+        window.open('popup.html', '_blank', 'width=250,height=200,left=100,top=100');
+        window.open('popup.html', '_blank', 'width=250,height=200,left=300,top=200');
+        window.open('popup.html', '_blank', 'width=250,height=200,left=500,top=100');
     }
-}
+});
 
-document.onclick = trigger;
-document.onkeydown = trigger;
+document.addEventListener('keydown', function() {
+    document.getElementById('aud').play();
+    window.open('popup.html', '_blank', 'width=250,height=200,left=' +
+        Math.floor(Math.random()*800) + ',top=' + Math.floor(Math.random()*600));
+});
 </script>
 </body>
 </html>
