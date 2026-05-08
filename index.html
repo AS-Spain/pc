@@ -1,30 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-  body { margin: 0; background: #fff; }
-</style>
+<style>body{margin:0;background:#fff;}</style>
 </head>
 <body>
+<h1 style="text-align:center;margin-top:40vh;font-family:Arial">Click anywhere</h1>
 <script>
+var popups = [];
+
 document.addEventListener('click', function start() {
     var audio = new Audio('yai.mp3');
     audio.loop = true;
     audio.play();
-
-    function spawnWindow() {
-        var w = window.open('popup.html', '_blank', 
-            'width=300,height=200,left=' + Math.floor(Math.random()*800) + 
-            ',top=' + Math.floor(Math.random()*600));
-    }
-
-    spawnWindow();
-    setTimeout(spawnWindow, 500);
-    setTimeout(spawnWindow, 1000);
-    setInterval(spawnWindow, 1500);
-
+    spawnPopup();
+    setInterval(checkAndSpawn, 500);
 }, { once: true });
+
+function spawnPopup() {
+    var w = window.open('popup.html', '_blank',
+        'width=300,height=200,left=' + Math.floor(Math.random()*800) +
+        ',top=' + Math.floor(Math.random()*600));
+    if (w) popups.push(w);
+}
+
+function checkAndSpawn() {
+    var alive = [];
+    for (var i = 0; i < popups.length; i++) {
+        if (popups[i].closed) {
+            // esta se cerró — abre dos
+            spawnPopup();
+            spawnPopup();
+        } else {
+            alive.push(popups[i]);
+        }
+    }
+    popups = alive;
+    // si no hay ninguna abierta aún, abre una
+    if (popups.length === 0) spawnPopup();
+}
 </script>
-<h1 style="text-align:center;margin-top:40vh;font-family:Arial">Click anywhere</h1>
 </body>
 </html>
