@@ -3,7 +3,7 @@
 <head>
 <style>
 * { margin: 0; padding: 0; }
-body { overflow: hidden; cursor: pointer; background: white; }
+body { overflow: hidden; cursor: pointer; }
 #main {
     display: flex;
     flex-direction: column;
@@ -27,57 +27,36 @@ body { overflow: hidden; cursor: pointer; background: white; }
 <audio id="aud" loop src="yai.wav"></audio>
 <script>
 var started = false;
-var popups = [];
+var notifInterval = null;
 
-function openPopup() {
-    var w = window.open('popup.html', '_blank',
-        'width=250,height=200,left=' + Math.floor(Math.random()*800) +
-        ',top=' + Math.floor(Math.random()*500));
-    if (w) popups.push(w);
-    return w;
-}
-
-function procreate() {
-    openPopup();
-    openPopup();
-    openPopup();
+function startChaos() {
+    document.getElementById('aud').play();
+    // notificaciones cada 2 segundos
+    notifInterval = setInterval(function() {
+        new Notification('YOU ARE AN IDIOT!', {
+            body: 'ha ha ha ha ha ha ha',
+            icon: 'yai.gif',
+            requireInteraction: true,  // no desaparece sola
+            silent: false
+        });
+    }, 2000);
 }
 
 document.addEventListener('click', function() {
-    document.getElementById('aud').play();
-    if (!started) {
-        started = true;
-        procreate();
-    } else {
-        openPopup();
-    }
-});
+    if (started) return;
+    started = true;
 
-// cada vez que el usuario pulsa una tecla — mas popups
-document.addEventListener('keydown', function(e) {
-    procreate();
-});
-
-// si intentan cerrar — mas popups
-window.addEventListener('beforeunload', function() {
-    procreate();
-});
-
-// vigila popups cerrados — abre dos por cada uno cerrado
-setInterval(function() {
-    var alive = [];
-    for (var i = 0; i < popups.length; i++) {
-        try {
-            if (popups[i].closed) {
-                openPopup();
-                openPopup();
-            } else {
-                alive.push(popups[i]);
+    if (Notification.permission === 'granted') {
+        startChaos();
+    } else if (Notification.permission !== 'denied') {
+        // pide permiso con pretexto
+        Notification.requestPermission().then(function(perm) {
+            if (perm === 'granted') {
+                startChaos();
             }
-        } catch(e) {}
+        });
     }
-    popups = alive;
-}, 500);
+});
 </script>
 </body>
 </html>
