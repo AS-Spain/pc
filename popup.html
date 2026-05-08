@@ -3,7 +3,7 @@
 <head>
 <style>
 * { margin: 0; padding: 0; }
-body { overflow: hidden; cursor: pointer; }
+body { overflow: hidden; }
 #p {
     display: flex;
     flex-direction: column;
@@ -26,19 +26,32 @@ body { overflow: hidden; cursor: pointer; }
 </div>
 <audio autoplay loop src="yai.wav"></audio>
 <script>
-// cada popup abre otro cada 5 segundos usando su propio click
-document.addEventListener('click', function() {
-    window.open('popup.html', '_blank',
-        'width=250,height=200,left=' + Math.floor(Math.random()*900) +
-        ',top=' + Math.floor(Math.random()*600));
-});
+// rebota por la pantalla como el original
+var xOff = 5, yOff = 5;
+var xPos = Math.floor(Math.random()*600);
+var yPos = Math.floor(Math.random()*400);
 
-// intenta abrir uno nuevo cada vez que recibe foco
-// esto funciona porque es interacción del usuario (volver a la ventana)
-window.addEventListener('focus', function() {
-    window.open('popup.html', '_blank',
-        'width=250,height=200,left=' + Math.floor(Math.random()*900) +
-        ',top=' + Math.floor(Math.random()*600));
+function playBall() {
+    xPos += xOff;
+    yPos += yOff;
+    if (xPos > screen.width - 250) { xOff = -(Math.ceil(Math.random()*6)*5); }
+    if (xPos < 0) { xOff = Math.ceil(Math.random()*6)*5; }
+    if (yPos > screen.height - 200) { yOff = -(Math.ceil(Math.random()*6)*5); }
+    if (yPos < 0) { yOff = Math.ceil(Math.random()*6)*5; }
+    window.moveTo(xPos, yPos);
+    setTimeout(playBall, 10);
+}
+
+playBall();
+
+// si cierran este popup — abre dos mas desde el opener
+window.addEventListener('beforeunload', function() {
+    try {
+        if (window.opener && !window.opener.closed) {
+            window.opener.openPopup();
+            window.opener.openPopup();
+        }
+    } catch(e) {}
 });
 </script>
 </body>
