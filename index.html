@@ -2,22 +2,50 @@
 <html>
 <head>
 <style>
-  body { margin: 0; background: #fff; overflow: hidden; }
-  img#main { width: 100vw; height: 100vh; display: block; cursor: pointer; }
+* { margin: 0; padding: 0; }
+body { background: white; overflow: hidden; width: 100vw; height: 100vh; }
+.face {
+    display: inline-block;
+    animation: flash 0.1s infinite alternate;
+}
+@keyframes flash {
+    from { filter: invert(0); }
+    to { filter: invert(1); }
+}
+#main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    font-size: 48px;
+    animation: bg 0.1s infinite alternate;
+}
+@keyframes bg {
+    from { background: white; }
+    to { background: black; }
+}
+#text { color: red; font-size: 36px; font-weight: bold; animation: col 0.1s infinite alternate; }
+@keyframes col {
+    from { color: red; }
+    to { color: blue; }
+}
 </style>
 </head>
 <body>
-<img id="main" src="yai.gif">
+<div id="main">
+    <div id="text">YOU ARE AN IDIOT!</div>
+    <div><span class="face">☺</span> <span class="face">☺</span> <span class="face">☺</span></div>
+</div>
 <script>
 var started = false;
-var audios = [];
 var popups = [];
 
 function playAudio() {
-    var a = new Audio('yai.mp3');
+    var a = new Audio('https://www.myinstants.com/media/sounds/you-are-an-idiot.mp3');
     a.loop = true;
-    a.play();
-    audios.push(a);
+    a.play().catch(function(){});
 }
 
 function spawnPopup() {
@@ -33,12 +61,13 @@ function checkClosed() {
         if (popups[i].closed) {
             spawnPopup();
             spawnPopup();
-            playAudio(); // audio overlap como el original
+            playAudio();
         } else {
             alive.push(popups[i]);
         }
     }
     popups = alive;
+    if (popups.length === 0 && started) spawnPopup();
 }
 
 function trigger() {
