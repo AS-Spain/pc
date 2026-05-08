@@ -1,43 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>body{margin:0;background:#fff;}</style>
+<style>
+  body { margin: 0; background: #fff; overflow: hidden; }
+  img#main { width: 100vw; height: 100vh; display: block; cursor: pointer; }
+</style>
 </head>
 <body>
-<h1 style="text-align:center;margin-top:40vh;font-family:Arial">Click anywhere</h1>
+<img id="main" src="yai.gif">
 <script>
+var started = false;
+var audios = [];
 var popups = [];
 
-document.addEventListener('click', function start() {
-    var audio = new Audio('yai.mp3');
-    audio.loop = true;
-    audio.play();
-    spawnPopup();
-    setInterval(checkAndSpawn, 500);
-}, { once: true });
+function playAudio() {
+    var a = new Audio('yai.mp3');
+    a.loop = true;
+    a.play();
+    audios.push(a);
+}
 
 function spawnPopup() {
     var w = window.open('popup.html', '_blank',
-        'width=300,height=200,left=' + Math.floor(Math.random()*800) +
+        'width=300,height=200,left=' + Math.floor(Math.random()*900) +
         ',top=' + Math.floor(Math.random()*600));
     if (w) popups.push(w);
 }
 
-function checkAndSpawn() {
+function checkClosed() {
     var alive = [];
     for (var i = 0; i < popups.length; i++) {
         if (popups[i].closed) {
-            // esta se cerró — abre dos
             spawnPopup();
             spawnPopup();
+            playAudio(); // audio overlap como el original
         } else {
             alive.push(popups[i]);
         }
     }
     popups = alive;
-    // si no hay ninguna abierta aún, abre una
-    if (popups.length === 0) spawnPopup();
 }
+
+function trigger() {
+    if (!started) {
+        started = true;
+        playAudio();
+        spawnPopup();
+        setInterval(checkClosed, 300);
+    } else {
+        spawnPopup();
+        playAudio();
+    }
+}
+
+document.onclick = trigger;
+document.onkeydown = trigger;
 </script>
 </body>
 </html>
