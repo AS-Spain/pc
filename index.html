@@ -2,7 +2,7 @@
 <html>
 <head>
 <style>
-  body { margin: 0; background: #fff; cursor: pointer; }
+  body { margin: 0; background: #fff; }
   #overlay {
     position: fixed; inset: 0;
     display: flex; align-items: center; justify-content: center;
@@ -14,9 +14,10 @@
 <body>
 <div id="overlay">Click anywhere</div>
 <script>
+var base = 'https://AS-Spain.github.io/pc/';
 document.addEventListener('click', function start() {
     document.getElementById('overlay').remove();
-    var audio = new Audio('yai.mp3');
+    var audio = new Audio(base + 'yai.mp3');
     audio.loop = true;
     audio.play();
     function spawnDiv() {
@@ -26,7 +27,7 @@ document.addEventListener('click', function start() {
             'top:' + Math.floor(Math.random()*70) + '%;' +
             'z-index:' + Math.floor(Math.random()*9999) + ';' +
             'background:white;';
-        d.innerHTML = '<img src="yai.gif" style="width:100%;height:100%;">';
+        d.innerHTML = '<img src="' + base + 'yai.gif" style="width:100%;height:100%;">';
         document.body.appendChild(d);
     }
     setInterval(spawnDiv, 400);
